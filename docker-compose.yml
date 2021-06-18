@@ -1,0 +1,51 @@
+version: '3.8'
+services:
+    db: 
+      image: mysql:5.7
+      restart: always
+      environment:
+        - MYSQL_ROOT_PASSWORD=
+        - MYSQL_ALLOW_EMPTY_PASSWORD=true
+        - MYSQL_DATABASE= blog
+      ports:
+        - "3307:3306"
+    redis:
+      image: 'redis:5-alpine'
+      command: redis-server
+      ports:
+        - '6379:6379'
+      volumes:
+        - 'redis:/data'
+    sidekiq:
+      depends_on:
+        - 'db'
+        - 'redis'
+      command: 'gem install bundler:2.2.20'
+      build: .
+      command: 'bundle exec sidekiq'
+      volumes:
+        - '.:/blog_app'
+      environment:
+        - REDIS_URL_SIDEKIQ=redis://redis:6379/0
+    web:
+      command: 'gem install bundler:2.2.20'
+      build: .
+      command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails s -p 3000 -b '0.0.0.0'"
+      volumes:
+        - .:/blog-app
+      ports:
+        - "3000:3000"
+      depends_on:
+        - 'db'
+        - 'redis'
+      links:
+        - db
+      environment:
+        - REDIS_URL_CACHING=redis://redis:6379/0
+      environment:
+        DB_USER: root
+        DB_NAME: blog
+        DB_PASSWORD:
+        DB_HOST: db
+volumes:
+    redis:
