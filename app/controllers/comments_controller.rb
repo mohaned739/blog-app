@@ -1,5 +1,4 @@
 class CommentsController < ApplicationController
-    before_action :authenticate
 
     def create
         comment =Comment.create(
@@ -15,7 +14,7 @@ class CommentsController < ApplicationController
     end
 
     def update
-        comment = Comment.find(params[:id])
+        comment = @comments.find(params[:id])
         if comment[:user_id]==@user.id
             if comment.update(
                 body: params[:body]
@@ -30,7 +29,7 @@ class CommentsController < ApplicationController
     end
 
     def destroy
-        comment = Comment.find(params[:id])
+        comment = @comments.find(params[:id])
         if comment[:user_id]==@user.id
             comment.destroy
             render json: {status: 'Success', message: 'Comment Deleted',data: comment},status: :ok

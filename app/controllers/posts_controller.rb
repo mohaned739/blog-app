@@ -1,7 +1,8 @@
 class PostsController < ApplicationController
-    before_action :authenticate
+
     def index
-        posts = Post.order('created_at DESC')
+        # posts = Post.order('created_at DESC')
+        posts = @posts
         render json: {status: 'Success', message: 'Loaded Posts',data: posts},status: :ok
     end
     def create
@@ -28,7 +29,7 @@ class PostsController < ApplicationController
     end
 
     def update
-        post = Post.find(params[:id])
+        post = @posts.find(params[:id])
         if post[:user_id]==@user.id
             if post.update(
                 title: params[:title],
@@ -44,9 +45,12 @@ class PostsController < ApplicationController
     end
 
     def destroy
-        post = Post.find(params[:id])
+        post = @posts.find(params[:id])
         if post[:user_id]==@user.id
+            tags = @tags.where(post_id: post.id).destroy_all
+            comments = @comments.where(post_id: post.id).destroy_all
             post.destroy
+
             render json: {status: 'Success', message: 'Post Deleted',data: post},status: :ok
         else
             render json: {status: 'Error', message: 'Cannot delete others posts',data: post.errors},status: :unprocessable_entity

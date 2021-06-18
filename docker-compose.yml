@@ -21,6 +21,7 @@ services:
         - 'db'
         - 'redis'
       command: 'gem install bundler:2.2.20'
+      command: 'bundle install'
       build: .
       command: 'bundle exec sidekiq'
       volumes:
@@ -29,6 +30,7 @@ services:
         - REDIS_URL_SIDEKIQ=redis://redis:6379/0
     web:
       command: 'gem install bundler:2.2.20'
+      command: 'bundle install'
       build: .
       command: bash -c "rm -f tmp/pids/server.pid && bundle exec rails s -p 3000 -b '0.0.0.0'"
       volumes:

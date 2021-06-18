@@ -3,11 +3,9 @@ class HardWorker
 
   def perform(id)
     # Do something
-    post = Post.find(id)
-    tags = Tag.where(post_id: id)
-    comments = Comment.where(post_id: id)
+    post = @posts.find(id)
+    tags = @tags.where(post_id: id).destroy_all
+    comments = @comments.where(post_id: id).destroy_all
     post.destroy
-    tags.destroy
-    comments.destroy
   end
 end

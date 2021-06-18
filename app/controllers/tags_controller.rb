@@ -1,5 +1,5 @@
 class TagsController < ApplicationController
-    before_action :authenticate
+
     def create
         tag =Tag.create(
                 body: params[:body],
@@ -13,7 +13,7 @@ class TagsController < ApplicationController
     end
 
     def update
-        tag = Tag.find(params[:id])
+        tag = @tags.find(params[:id])
             if tag.update(
                 body: params[:body]
                 )
@@ -24,8 +24,8 @@ class TagsController < ApplicationController
     end
 
     def destroy
-        tag = Tag.find(params[:id])
-        tagsCount = Tag.where(post_id: tag.post_id).count
+        tag = @tags.find(params[:id])
+        tagsCount = @tags.where(post_id: tag.post_id).count
 
         if tagsCount>1
             tag.destroy
