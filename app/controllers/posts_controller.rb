@@ -47,8 +47,6 @@ class PostsController < ApplicationController
     def destroy
         post = @posts.find(params[:id])
         if post[:user_id]==@user.id
-            tags = @tags.where(post_id: post.id).destroy_all
-            comments = @comments.where(post_id: post.id).destroy_all
             post.destroy
 
             render json: {status: 'Success', message: 'Post Deleted',data: post},status: :ok
